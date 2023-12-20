@@ -1,11 +1,23 @@
+import os
 import numpy as np
+import matplotlib.pyplot as plt
 from skimage.filters import gabor_kernel
 import tensorflow as tf
 
-#Import the cifar100 dataset from keras. It'll probably download it the first time
+# This code is used to make the simulated data set of responses of n neurons to
+# different numbers of images (i.e. see [1000, 3000, 10000, 30000] below)
+# You can specify the number of neurons (n_neurons below) and the numbers of images 
+# you want to expose each neuron to. The responses of each simulated neuron to each
+# image in the training set are saved in a CSV file (see below)
+
+# Import the cifar100 dataset from keras. It'll probably download it the first time.
+# The tf.keras.datasets.cifar100.load_data() function in TensorFlow is used to load 
+# the CIFAR-100 dataset, which is a collection of 60,000 32x32 color images in 100 different classes
+# In Linux it will download to:
+#  "~/.keras/datasets/" where ~ is your home directory
 (x_train, _), (x_test, _) = tf.keras.datasets.cifar100.load_data()
 
-#greyscale, retype and normalize data. Neural networks like there data to be floating points. If there were lots
+#greyscale, retype and normalize data. Neural networks like their data to be floating points. If there were lots
 #Of different data types, we'd probably want them all centered around 0... z-scored.
 x_train = np.mean(x_train, axis=3).astype('float32') / 255
 x_test = np.mean(x_test, axis=3).astype('float32') / 255
@@ -18,7 +30,7 @@ n_train_images, height, width = x_train.shape
 # with the image.
 
 class Neuron:
-	#__init__ is scalled whenever an new instance of the class
+	#__init__ is called whenever an new instance of the class
 	# is made.
 	def __init__(self, width, height):
 		scale = np.random.random()*3 + 1
@@ -69,7 +81,9 @@ class Neuron:
 	# with the image. Sum it up, and multiply by 4. Then feed into a sigmoid, and tack on a random.
 	def get_activity(self, input):
 		input = np.sum(self.rf * input) * 4 #dot product scaled by a factor of 4 to cover the sigmoid range
-		return 1/(1+np.exp(input)) + np.random.normal(scale=0.25)
+		# note that here we are adding some random noise to the response. you can experiment with signal
+		# to noise ratio, or have no noise
+		return 1/(1+np.exp(input)) + np.random.normal(scale=noise_scale)
 
 	#Just a helper method to generate a random number between 0 and pi.
 	def _randpi(self):
@@ -77,38 +91,51 @@ class Neuron:
 
 
 #Make 500 neurons and put them in a list
-n_neurons = 500
+n_neurons = 1000
+noise_scale = 0.1
 neurons = []
 for _ in range(n_neurons):
 	neurons.append(Neuron(width,height))
 
-
-replicates = 4
-
+replicates = 1
 
 #loop over every training image, and repeat it replicates times.
 #build up a row to go in our results (output) table
 #that first contains a flattened version of our image
 #The for every neuron we have, feed it our image, and append the activity
-#to our row
+#to our row [1000, 3000, 10000, 30000]
 
-for n_img in [1000, 3000, 10000, 30000]:
+# numbers of images to generate simulated responses to:
+numbers_of_images = [1000, 3000, 10000, 30000]
+
+for n_img in numbers_of_images:
+	print('Started generating responses to ' + str(n_img) + ' images...')
 	results = []
 	n_train_images = n_img
 	for i in range(n_train_images):
 		for r in range(replicates):
 			row = []
+			# flatten the image
 			row += list(x_train[i,:,:].flatten())
+			# calculate response of every neuron to the image
 			for neuron in neurons:
 				row.append(neuron.get_activity(x_train[i,:,:]))
 		results.append(row)
 		if i%1000 == 0:
-			print("Calculated Image {}".format(i))
+			print("Calculated response to image {}".format(i))
 
 
-	#Save the output
+	# Save the output
+	# Output will be saved to the "home/username/data/Response_Simulation/A" folder
+	save_dir = '~/data/Response_Simulation/A/'
+	save_dir = os.path.expanduser(save_dir)
+	# Check if the directory does not exist
+	if not os.path.exists(save_dir):
+		# Create the directory
+		os.makedirs(save_dir)
 
 	fname = 'neurons_to_cifar_' + str(n_neurons) + 'n_' + str(replicates) +'rep' + str(n_img) + 'n_img'
+	fname = os.path.join(save_dir,fname)
 	np.savetxt(fname +'.csv', results, delimiter=',')
 
 	neuron_prop = []
