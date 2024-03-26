@@ -12,7 +12,7 @@ path = '~/data/Response_Simulation/A/'
 path = os.path.expanduser(path)
 # note: this filename will change depending on how many neurons and repeats you
 #       do when generating the data
-fname = 'neurons_to_cifar_5000n_1rep10000n_img'
+fname = 'neurons_to_cifar_1000n_1rep10000n_img'
 
 #These three functions at the top are helper functions
 
@@ -119,6 +119,8 @@ for i in range(10):
         axs[1, i].set_title("reconstructed")
     axs[1, i].axis('off')
 
+plt.title('Cost Function vs Epoch')
+plt.savefig('cost_vs_epoch.png')
 plt.show()
 
 
