@@ -12,7 +12,8 @@ path = '~/data/Response_Simulation/A/'
 path = os.path.expanduser(path)
 # note: this filename will change depending on how many neurons and repeats you
 #       do when generating the data
-fname = 'neurons_to_cifar_1000n_1rep10000n_img'
+n_neurons=1000
+fname = f'neurons_to_cifar_{n_neurons}n_1rep10000n_img'
 
 #These three functions at the top are helper functions
 
@@ -97,7 +98,9 @@ plt.plot(history.history['val_loss'], label='Validation Loss')
 plt.xlabel('Epoch')
 plt.ylabel('Loss')
 plt.legend()
-plt.title('Cost Function vs Epoch')
+plt.title(f'Cost Function vs Epoch ({n_neurons} neurons)')
+#savefig
+plt.savefig(f'ANNpictures/cost_vs_epoch_{n_neurons}n.png')
 plt.show()
 
 
@@ -118,7 +121,10 @@ for i in range(10):
     if i == 0:
         axs[1, i].set_title("reconstructed")
     axs[1, i].axis('off')
-
+#save figure
+plt.title(f'Cost Function vs Epoch ({n_neurons} neurons)')
+plt.title(f'Cost Function vs Epoch ({n_neurons} neurons)')
+plt.savefig(f'ANNpictures/orig+reconstructed_{n_neurons}n.png')
 plt.title('Cost Function vs Epoch')
 plt.savefig('cost_vs_epoch.png')
 plt.show()
@@ -146,5 +152,6 @@ for i in range(10):
     if i == 0:
         axs[1, i].set_title("Estimated RF")
     axs[1, i].axis('off')
-
+#it should be saved inside ANNpictures folder
+plt.savefig(f'ANNpictures/RFs_{n_neurons}n.png')
 plt.show()
