@@ -12,7 +12,7 @@ path = '~/data/Response_Simulation/A/'
 path = os.path.expanduser(path)
 # note: this filename will change depending on how many neurons and repeats you
 #       do when generating the data
-n_neu=1000
+n_neu=[500,1000,2000]
 numbers_of_images = [1000, 3000, 10000, 30000]
 
 for n_neurons in n_neu:
@@ -129,8 +129,8 @@ for n_neurons in n_neu:
         #save figure
 
         plt.savefig(f'ANNpictures/orig+reconstructed_{n_neurons}n_{n_img}imag.png')
-        plt.title('Cost Function vs Epoch')
-        plt.savefig('cost_vs_epoch.png')
+        plt.title(f'Original vs Reconstructed ({n_neurons} neurons, {n_img} images)')
+        plt.savefig(f'ANNpictures/orig_vs_reconstructed_{n_neurons}n_{n_img}img.png')
         plt.show()
 
 

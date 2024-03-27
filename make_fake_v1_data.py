@@ -90,8 +90,8 @@ class Neuron:
 		return np.random.rand()*2*np.pi
 
 
-#Make 500 neurons and put them in a list
-n_neurons = 1000
+#Make 1000 (default) neurons and put them in a list
+n_neurons = 500
 noise_scale = 0.1
 neurons = []
 for _ in range(n_neurons):
