@@ -12,9 +12,14 @@ path = '~/data/Response_Simulation/A/'
 path = os.path.expanduser(path)
 # note: this filename will change depending on how many neurons and repeats you
 #       do when generating the data
-n_neu=[500,1000,2000]
+n_neu=[250,500,1000,2000]
+# n_neu=[1000]
 numbers_of_images = [1000, 3000, 10000, 30000]
+# numbers_of_images=[30000]
+noise_scale = [0.1, 0.5, 1.0, 2.0, 5.0]
+# numbers_of_images = [1000]
 #CREATE FOLDER FOR SAVING PICTURES
+maxvalue=[] #this is for saving the maximum value of the cost function
 if not os.path.exists('ANNpictures'):
     os.makedirs('ANNpictures')
 
@@ -22,6 +27,7 @@ if not os.path.exists('ANNpictures'):
 for n_neurons in n_neu:
 
     for n_img in numbers_of_images:
+
         fname = f'neurons_to_cifar_{n_neurons}n_1rep{n_img}n_img'
 
         #These three functions at the top are helper functions
@@ -105,6 +111,10 @@ for n_neurons in n_neu:
         plt.plot(history.history['loss'], label='Training Loss')
         plt.plot(history.history['val_loss'], label='Validation Loss')
         #I want to save the values for later use
+        #Give me the maximum value of these plot
+        maxvalue.append(np.max([history.history['val_loss'],history.history['loss']]))
+        #y-limits to the maximum
+        plt.ylim(0,0.06)
         np.save(f'ANNpictures/training_loss_{n_neurons}n_{n_img}img', history.history['loss'])
         np.save(f'ANNpictures/validation_loss_{n_neurons}n_{n_img}img', history.history['val_loss'])
         plt.xlabel('Epoch')
@@ -123,6 +133,7 @@ for n_neurons in n_neu:
 
         #Just plotting the 
         fig, axs = plt.subplots(2, 10)
+
         for i in range(10):
             axs[0, i].imshow(y_test[i, :].reshape(32,32), cmap='gray')
             if i == 0:
@@ -134,7 +145,8 @@ for n_neurons in n_neu:
                 axs[1, i].set_title("reconstructed")
             axs[1, i].axis('off')
         #save figure
-        plt.title(f'Original vs Reconstructed ({n_neurons} neurons, {n_img} images)')
+        plt.title(f'Orig. vs Recons. ({n_neurons} neurons, {n_img} images)',loc='right')
+        plt.subplots_adjust(wspace=0, hspace=0.0)
         plt.savefig(f'ANNpictures/orig_vs_reconstructed_{n_neurons}n_{n_img}img.png')
         plt.show()
 
@@ -162,6 +174,8 @@ for n_neurons in n_neu:
                 axs[1, i].set_title("Estimated RF")
             axs[1, i].axis('off')
         #it should be saved inside ANNpictures folder
-        plt.title(f'RFs ({n_neurons} neurons, {n_img} images)') 
+        plt.subplots_adjust(wspace=0, hspace=0.0)
+        plt.title(f'RFs ({n_neurons} neurons, {n_img} images)',loc='right') 
         plt.savefig(f'ANNpictures/RFs_{n_neurons}n_{n_img}img.png')
         plt.show()
+print(maxvalue)

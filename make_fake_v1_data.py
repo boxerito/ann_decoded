@@ -91,7 +91,7 @@ class Neuron:
 
 
 #Make 1000 (default) neurons and put them in a list
-n_neurons = 500
+n_neurons = 1000
 noise_scale = 0.1
 neurons = []
 for _ in range(n_neurons):
