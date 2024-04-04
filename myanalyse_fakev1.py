@@ -14,6 +14,10 @@ path = os.path.expanduser(path)
 #       do when generating the data
 n_neu=[500,1000,2000]
 numbers_of_images = [1000, 3000, 10000, 30000]
+#CREATE FOLDER FOR SAVING PICTURES
+if not os.path.exists('ANNpictures'):
+    os.makedirs('ANNpictures')
+
 
 for n_neurons in n_neu:
 
@@ -100,6 +104,9 @@ for n_neurons in n_neu:
         # Plotting the training and validation loss
         plt.plot(history.history['loss'], label='Training Loss')
         plt.plot(history.history['val_loss'], label='Validation Loss')
+        #I want to save the values for later use
+        np.save(f'ANNpictures/training_loss_{n_neurons}n_{n_img}img', history.history['loss'])
+        np.save(f'ANNpictures/validation_loss_{n_neurons}n_{n_img}img', history.history['val_loss'])
         plt.xlabel('Epoch')
         plt.ylabel('Loss')
         plt.legend()
@@ -127,8 +134,6 @@ for n_neurons in n_neu:
                 axs[1, i].set_title("reconstructed")
             axs[1, i].axis('off')
         #save figure
-
-        plt.savefig(f'ANNpictures/orig+reconstructed_{n_neurons}n_{n_img}imag.png')
         plt.title(f'Original vs Reconstructed ({n_neurons} neurons, {n_img} images)')
         plt.savefig(f'ANNpictures/orig_vs_reconstructed_{n_neurons}n_{n_img}img.png')
         plt.show()
@@ -157,5 +162,6 @@ for n_neurons in n_neu:
                 axs[1, i].set_title("Estimated RF")
             axs[1, i].axis('off')
         #it should be saved inside ANNpictures folder
+        plt.title(f'RFs ({n_neurons} neurons, {n_img} images)') 
         plt.savefig(f'ANNpictures/RFs_{n_neurons}n_{n_img}img.png')
         plt.show()
