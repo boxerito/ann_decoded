@@ -23,7 +23,7 @@ maxvalue=[] #this is for saving the maximum value of the cost function
 if not os.path.exists('ANNpictures'):
     os.makedirs('ANNpictures')
 
-adaptive_noise=0.8
+adaptive_noise=0.1
 for n_neurons in n_neu:
 
     for n_img in numbers_of_images:
@@ -114,7 +114,7 @@ for n_neurons in n_neu:
         #Give me the maximum value of these plot
         maxvalue.append(np.max([history.history['val_loss'],history.history['loss']]))
         #y-limits to the maximum
-        plt.ylim(0,0.06)
+        plt.ylim(0,0.06) #insert here maxvalue
         np.save(f'ANNpictures/training_loss_{n_neurons}n_{n_img}img', history.history['loss'])
         np.save(f'ANNpictures/validation_loss_{n_neurons}n_{n_img}img', history.history['val_loss'])
         plt.xlabel('Epoch')
@@ -145,7 +145,7 @@ for n_neurons in n_neu:
                 axs[1, i].set_title("reconstructed")
             axs[1, i].axis('off')
         #save figure
-        plt.title(f'Orig. vs Recons. ({n_neurons} neurons, {n_img} images, {adaptive_noise} fatigue)',loc='right')
+        plt.title(f'{n_neurons} neurons, {n_img} images, {adaptive_noise} fatigue',loc='right')
         plt.subplots_adjust(wspace=0, hspace=0.0)
         plt.savefig(f'ANNpictures/orig_vs_reconstructed_{n_neurons}n_{n_img}img_{adaptive_noise}fatigue.png')
         plt.show()
@@ -175,7 +175,7 @@ for n_neurons in n_neu:
             axs[1, i].axis('off')
         #it should be saved inside ANNpictures folder
         plt.subplots_adjust(wspace=0, hspace=0.0)
-        plt.title(f'RFs ({n_neurons} neurons, {n_img} images, {adaptive_noise}fatigue)',loc='right') 
+        plt.title(f'RFs ({n_neurons} neurons, {n_img} images, {adaptive_noise} fatigue)',loc='right') 
         plt.savefig(f'ANNpictures/RFs_{n_neurons}n_{n_img}img_{adaptive_noise}fatigue.png')
         plt.show()
-print(maxvalue)
+print(np.max(maxvalue))
