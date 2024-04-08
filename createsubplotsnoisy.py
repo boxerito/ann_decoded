@@ -34,5 +34,5 @@ for name in name:
         # Adjust the spacing between subplots
         plt.tight_layout()
         
-        plt.savefig(f'ANNpictures/{name}for{n}neurons{i}img.png', dpi=500)
+        plt.savefig(f'ANNpictures/{name}for{n}neurons{i}img_noise.png', dpi=500)
         plt.show()

@@ -23,7 +23,7 @@ maxvalue=[] #this is for saving the maximum value of the cost function
 if not os.path.exists('ANNpictures'):
     os.makedirs('ANNpictures')
 
-adaptive_noise=0.1
+adaptive_noise=1.6
 for n_neurons in n_neu:
 
     for n_img in numbers_of_images:

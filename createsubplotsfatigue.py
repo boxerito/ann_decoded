@@ -9,9 +9,9 @@ for name in name:
         # Initialize the figure and subplots
         fig, axs = plt.subplots(3, 2, figsize=(10, 10))
         
-        for noise, ax in zip([0.05,0.1, 0.5, 1.0, 2.0, 5.0], axs.flatten()):
+        for adaptive_noise, ax in zip([0.1,0.2,0.4,0.8,1.6], axs.flatten()):
             # Generate the image file name based on n and i
-            img_file = f'ANNpictures/{name}_{n}n_{i}img_{noise}noise.png'
+            img_file = f'ANNpictures/{name}_{n}n_{i}img_{adaptive_noise}fatigue.png'
             
             # Load and display the image
             img = mpimg.imread(img_file)
@@ -34,5 +34,5 @@ for name in name:
         # Adjust the spacing between subplots
         plt.tight_layout()
         
-        plt.savefig(f'ANNpictures/{name}for{n}neurons{i}img.png', dpi=500)
+        plt.savefig(f'ANNpictures/{name}for{n}neurons{i}img_fatigue.png', dpi=500)
         plt.show()
