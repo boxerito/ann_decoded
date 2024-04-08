@@ -23,7 +23,7 @@ maxvalue=[] #this is for saving the maximum value of the cost function
 if not os.path.exists('ANNpictures'):
     os.makedirs('ANNpictures')
 
-adaptive_noise=1.6
+adaptive_noise=0.1
 for n_neurons in n_neu:
 
     for n_img in numbers_of_images:
@@ -114,7 +114,7 @@ for n_neurons in n_neu:
         #Give me the maximum value of these plot
         maxvalue.append(np.max([history.history['val_loss'],history.history['loss']]))
         #y-limits to the maximum
-        plt.ylim(0,0.06) #insert here maxvalue
+        plt.ylim(0,0.32) #insert here maxvalue
         np.save(f'ANNpictures/training_loss_{n_neurons}n_{n_img}img', history.history['loss'])
         np.save(f'ANNpictures/validation_loss_{n_neurons}n_{n_img}img', history.history['val_loss'])
         plt.xlabel('Epoch')

@@ -84,7 +84,7 @@ class Neuron:
 		# Calculate the basic activity as before
 		basic_activity = np.sum(self.rf * input) * 4
 		activity = 1 / (1 + np.exp(-basic_activity))
-		adaptive_noise = 1
+		adaptive_noise = 1.2
 		# Introduce an adaptive noise component based on previous activity
 		adaptive_noise_scale = max(abs(adaptive_noise * self.previous_activity), 0.01)
 		adaptive_noise = np.random.normal(scale=adaptive_noise_scale)
@@ -145,7 +145,7 @@ for n_neurons in n_neurons:
 			# Create the directory
 			os.makedirs(save_dir)
 
-		adaptive_noise=1
+		adaptive_noise=1.2
 
 		fname = 'neurons_to_cifar_' + str(n_neurons) + 'n_' + str(replicates) +'rep' + str(n_img) + 'n_img'+'_'+str(adaptive_noise)+'fatigue'
 		fname = os.path.join(save_dir,fname)

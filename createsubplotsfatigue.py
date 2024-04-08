@@ -9,7 +9,7 @@ for name in name:
         # Initialize the figure and subplots
         fig, axs = plt.subplots(3, 2, figsize=(10, 10))
         
-        for adaptive_noise, ax in zip([0.1,0.2,0.4,0.8,1.6], axs.flatten()):
+        for adaptive_noise, ax in zip([0.1,0.2,0.4,0.8,1,1.6], axs.flatten()):
             # Generate the image file name based on n and i
             img_file = f'ANNpictures/{name}_{n}n_{i}img_{adaptive_noise}fatigue.png'
             
