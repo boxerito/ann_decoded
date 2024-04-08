@@ -1,0 +1,47 @@
+from keras.models import Model
+from keras.layers import Input, Conv2D, MaxPooling2D, Flatten, Dense, concatenate
+from keras.preprocessing.image import ImageDataGenerator
+from keras.applications.vgg16 import preprocess_input
+
+# Define two sets of inputs
+inputA = Input(shape=(64, 64, 1)) # for calcium imaging
+inputB = Input(shape=(224, 224, 3)) # for .jpg images
+
+# First branch (calcium imaging)
+x = Conv2D(32, (3, 3), activation='relu')(inputA)
+x = MaxPooling2D(pool_size=(2, 2))(x)
+x = Flatten()(x)
+x = Model(inputs=inputA, outputs=x)
+
+# Second branch (.jpg images)
+y = Conv2D(32, (3, 3), activation='relu')(inputB)
+y = MaxPooling2D(pool_size=(2, 2))(y)
+y = Flatten()(y)
+y = Model(inputs=inputB, outputs=y)
+
+# Combine the output of the two branches
+combined = concatenate([x.output, y.output])
+
+# Apply a FC layer and then a regression prediction on the
+# combined outputs
+z = Dense(64, activation="relu")(combined)
+z = Dense(1, activation="linear")(z)
+
+# Our final model will accept inputs from the two branches and
+# output a single value (the predicted value)
+model = Model(inputs=[x.input, y.input], outputs=z)
+
+# Compile the model
+model.compile(optimizer='adam', loss='mean_squared_error')
+
+# Assume we have two directories, 'calcium_images' and 'jpg_images', each containing corresponding images
+# We use Keras' ImageDataGenerator to feed the images to our model
+train_datagen = ImageDataGenerator(preprocessing_function=preprocess_input)
+train_generator = train_datagen.flow_from_directory(
+    'data/train',
+    target_size=(224, 224),
+    batch_size=32,
+    class_mode='binary')
+
+# Train the model
+model.fit_generator(train_generator, steps_per_epoch=2000, epochs=50)
