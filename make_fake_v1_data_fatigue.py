@@ -103,12 +103,12 @@ class Neuron:
 
 
 #Make 1000 (default) neurons and put them in a list
-n_neurons = [250,500,1000,2000]
+n_neurons_list = [250,500,1000,2000]
 noise_scale = 0.1
 
 # adaptive_noise_factor = 1.4
 for adaptive_noise_factor in [0.2, 0.4, 0.6, 0.8, 1.0, 1.2]:
-	for n_neurons in n_neurons:
+	for n_neurons in n_neurons_list:
 		neurons = []
 		for _ in range(n_neurons):
 			neurons.append(Neuron(width,height))
