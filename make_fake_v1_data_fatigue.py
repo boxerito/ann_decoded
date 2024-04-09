@@ -21,9 +21,8 @@ import tensorflow as tf
 #Of different data types, we'd probably want them all centered around 0... z-scored.
 x_train = np.mean(x_train, axis=3).astype('float32') / 255
 x_test = np.mean(x_test, axis=3).astype('float32') / 255
- 
-n_train_images, height, width = x_train.shape
 
+n_train_images, height, width = x_train.shape
 
 #Our neuron class. Which is really just a mechanism
 #to generate a little gabor filter and then do the dot-product
@@ -80,13 +79,16 @@ class Neuron:
 
 	# The meat of the sandwhich. Just do element-wise multiplication of the receptive field
 	# with the image. Sum it up, and multiply by 4. Then feed into a sigmoid, and tack on a random.
+	
+	
 	def get_activity(self, input):
 		# Calculate the basic activity as before
 		basic_activity = np.sum(self.rf * input) * 4
 		activity = 1 / (1 + np.exp(-basic_activity))
-		adaptive_noise = 1.2
+		# global adaptive_noise
+		# adaptive_noise = 1.4
 		# Introduce an adaptive noise component based on previous activity
-		adaptive_noise_scale = max(abs(adaptive_noise * self.previous_activity), 0.01)
+		adaptive_noise_scale = max(abs(adaptive_noise_factor * self.previous_activity), 0.01)
 		adaptive_noise = np.random.normal(scale=adaptive_noise_scale)
 
 		# Update the activity with adaptive noise and store it for next time
@@ -103,57 +105,60 @@ class Neuron:
 #Make 1000 (default) neurons and put them in a list
 n_neurons = [250,500,1000,2000]
 noise_scale = 0.1
-for n_neurons in n_neurons:
-	neurons = []
-	for _ in range(n_neurons):
-		neurons.append(Neuron(width,height))
 
-	replicates = 1
+# adaptive_noise_factor = 1.4
+for adaptive_noise_factor in [0.2, 0.4, 0.6, 0.8, 1.0, 1.2]:
+	for n_neurons in n_neurons:
+		neurons = []
+		for _ in range(n_neurons):
+			neurons.append(Neuron(width,height))
 
-	#loop over every training image, and repeat it replicates times.
-	#build up a row to go in our results (output) table
-	#that first contains a flattened version of our image
-	#The for every neuron we have, feed it our image, and append the activity
-	#to our row [1000, 3000, 10000, 30000]
+		replicates = 1
 
-	# numbers of images to generate simulated responses to:
-	numbers_of_images = [1000, 3000, 10000, 30000]
+		#loop over every training image, and repeat it replicates times.
+		#build up a row to go in our results (output) table
+		#that first contains a flattened version of our image
+		#The for every neuron we have, feed it our image, and append the activity
+		#to our row [1000, 3000, 10000, 30000]
 
-	for n_img in numbers_of_images:
-		print('Started generating responses to ' + str(n_img) + ' images...')
-		results = []
-		n_train_images = n_img
-		for i in range(n_train_images):
-			for r in range(replicates):
-				row = []
-				# flatten the image
-				row += list(x_train[i,:,:].flatten())
-				# calculate response of every neuron to the image
-				for neuron in neurons:
-					row.append(neuron.get_activity(x_train[i,:,:]))
-			results.append(row)
-			if i%1000 == 0:
-				print("Calculated response to image {}".format(i))
+		# numbers of images to generate simulated responses to:
+		numbers_of_images = [1000, 3000, 10000, 30000]
+
+		for n_img in numbers_of_images:
+			print('Started generating responses to ' + str(n_img) + ' images...')
+			results = []
+			n_train_images = n_img
+			for i in range(n_train_images):
+				for r in range(replicates):
+					row = []
+					# flatten the image
+					row += list(x_train[i,:,:].flatten())
+					# calculate response of every neuron to the image
+					for neuron in neurons:
+						row.append(neuron.get_activity(x_train[i,:,:]))
+				results.append(row)
+				if i%1000 == 0:
+					print("Calculated response to image {}".format(i))
 
 
-		# Save the output
-		# Output will be saved to the "home/username/data/Response_Simulation/A" folder
-		save_dir = '~/data/Response_Simulation/A/'
-		save_dir = os.path.expanduser(save_dir)
-		# Check if the directory does not exist
-		if not os.path.exists(save_dir):
-			# Create the directory
-			os.makedirs(save_dir)
+			# Save the output
+			# Output will be saved to the "home/username/data/Response_Simulation/A" folder
+			save_dir = '~/data/Response_Simulation/A/'
+			save_dir = os.path.expanduser(save_dir)
+			# Check if the directory does not exist
+			if not os.path.exists(save_dir):
+				# Create the directory
+				os.makedirs(save_dir)
 
-		adaptive_noise=1.2
+			# Save the output to a CSV file
+			# global adaptive_noise
+			fname = 'neurons_to_cifar_' + str(n_neurons) + 'n_' + str(replicates) +'rep' + str(n_img) + 'n_img'+'_'+str(adaptive_noise_factor)+'fatigue'
+			fname = os.path.join(save_dir,fname)
+			np.savetxt(fname +'.csv', results, delimiter=',')
 
-		fname = 'neurons_to_cifar_' + str(n_neurons) + 'n_' + str(replicates) +'rep' + str(n_img) + 'n_img'+'_'+str(adaptive_noise)+'fatigue'
-		fname = os.path.join(save_dir,fname)
-		np.savetxt(fname +'.csv', results, delimiter=',')
+			neuron_prop = []
+			for neuron in neurons:
+				neuron_prop.append(neuron.get_props())
 
-		neuron_prop = []
-		for neuron in neurons:
-			neuron_prop.append(neuron.get_props())
-
-		#This contains the properties of the neurons
-		np.savetxt(fname + '_neuron_prop.csv', neuron_prop, delimiter=',')
+			#This contains the properties of the neurons
+			np.savetxt(fname + '_neuron_prop.csv', neuron_prop, delimiter=',')
