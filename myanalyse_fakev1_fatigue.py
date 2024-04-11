@@ -116,8 +116,8 @@ for adaptive_noise in adaptive_noise_factor:
             maxvalue.append(np.max([history.history['val_loss'],history.history['loss']]))
             #y-limits to the maximum
             plt.ylim(0,0.30) #insert here maxvalue
-            np.save(f'ANNpictures/training_loss_{n_neurons}n_{n_img}img', history.history['loss'])
-            np.save(f'ANNpictures/validation_loss_{n_neurons}n_{n_img}img', history.history['val_loss'])
+            np.save(f'ANNpictures/training_loss_{n_neurons}n_{n_img}img_{adaptive_noise}fatigue', history.history['loss'])
+            np.save(f'ANNpictures/validation_loss_{n_neurons}n_{n_img}img_{adaptive_noise}fatigue', history.history['val_loss'])
             plt.xlabel('Epoch')
             plt.ylabel('Loss')
             plt.legend()
