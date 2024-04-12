@@ -62,8 +62,8 @@ loss_values_val = np.zeros((len(neurons_list), len(img_list)))
 for i, n_neurons in enumerate(neurons_list):
     for j, n_img in enumerate(img_list):
         # Load the training loss array
-        train_loss = np.load(f'ANNpictures/training_loss_{n_neurons}n_{n_img}img.npy')
-        val_loss = np.load(f'ANNpictures/validation_loss_{n_neurons}n_{n_img}img.npy')
+        train_loss = np.load(f'ANNpictures/MLP_training_loss_{n_neurons}n_{n_img}img.npy')
+        val_loss = np.load(f'ANNpictures/MLP_validation_loss_{n_neurons}n_{n_img}img.npy')
         
         # Store the mean loss value in the 2D array
         loss_values_train[i, j] = np.mean(train_loss)
@@ -85,7 +85,7 @@ axs[0].set_xticklabels(img_list)
 axs[0].set_yticklabels(neurons_list)
 axs[0].set_xlabel('Number of Training Examples')
 axs[0].set_ylabel('Number of Neurons')
-axs[0].set_title('Mean Training Loss for # (Neurons, Training Examples)')
+axs[0].set_title('MLP-Mean Training Loss for # (Neurons, Training Examples)')
 
 # Create a 2D color plot of the validation loss values
 im2 = axs[1].imshow(loss_values_val, cmap='hot', interpolation='nearest')
@@ -98,10 +98,11 @@ axs[1].set_xticklabels(img_list)
 axs[1].set_yticklabels(neurons_list)
 axs[1].set_xlabel('Number of Validation Examples')
 axs[1].set_ylabel('Number of Neurons')
-axs[1].set_title('Mean Validation Loss for # (Neurons, Training Examples)')
+axs[1].set_title('MLP-Mean Validation Loss for # (Neurons, Training Examples)')
+plt.tight_layout
 
 # Save the figure
-plt.savefig(f'ANNpictures/mean_loss.png')
+plt.savefig(f'ANNpictures/MLP_mean_loss.png')
 
 # Show the plot
 plt.show()
