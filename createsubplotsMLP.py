@@ -21,11 +21,13 @@ for name in name_list:
             # Set the title based on the name
             if name == 'reconstruction':
                 ax.set_title(f'Orig. vs recons. ({n} neurons, {i} images)', fontsize=fontsize)
-                plt.subplots_adjust(wspace=0, hspace=-0.5)
+                plt.subplots_adjust(wspace=0, hspace=-0.8)
             elif name == 'model_loss':
                 ax.set_title(f'Cost vs Epoch ({n} neurons, {i} images)', fontsize=fontsize)
                 plt.subplots_adjust(wspace=0, hspace=0)
-            plt.tight_layout()
+        
+
+        plt.tight_layout()
 
         plt.savefig(f'ANNpictures/{name}for{n}neurons_MLP.png', dpi=500)
         plt.show()

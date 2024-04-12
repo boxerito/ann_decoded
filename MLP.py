@@ -68,10 +68,12 @@ for n_neurons in n_neu:
 
         # Compile and train the model
         decoder.compile(optimizer='adam', loss=tf.keras.losses.MeanSquaredError())
+        #SUGGEST ALTERNATIVE FOR LOSS FUNCTION
+        # decoder.compile(optimizer='adam',loss=tf.keras.losses.MeanAbsoluteError())
         history = decoder.fit(x_train, y_train, epochs=5, shuffle=True, validation_data=(x_test, y_test))
 
         # Save and plot training history, reconstructed images, etc.
-        decoder.save(f'ANNpictures/decoder_{fname}.h5')
+        decoder.save(f'ANNpictures/decoderMLP_{fname}.h5')
         plt.plot(history.history['loss'])
         plt.plot(history.history['val_loss'])
         plt.title('model loss for ' + fname+ ' (MLP)')
@@ -81,7 +83,10 @@ for n_neurons in n_neu:
         plt.ylim(0, 0.07)
         plt.legend(['train', 'test'], loc='upper right')
         #savefig
-        plt.savefig(f'ANNpictures/model_loss_MLP_{fname}.png')
+        plt.savefig(f'ANNpictures/MLP_model_loss_{fname}.png')
+        #Store the numpy of loss and val_loss
+        np.save(f'ANNpictures/MLP_training_loss_{n_neurons}n_{n_img}img.npy', history.history['loss'])
+        np.save(f'ANNpictures/MLP_validation_loss_{n_neurons}n_{n_img}img.npy', history.history['val_loss'])
         plt.show()
         maxval.append(max([max(history.history['val_loss']),max(history.history['loss'])]))
 
@@ -113,3 +118,22 @@ for n_neurons in n_neu:
 
 print(maxval)
 print(max(maxval))
+
+
+# #uSEFUL ADDITIONAL INFO
+# from tensorflow.keras.models import load_model
+
+# # Replace 'model.h5' with the path to your HDF5 file
+# model = load_model('model.h5')
+# predictions = model.predict(data)
+# from tensorflow.keras.models import load_model
+
+# # Load the model
+# model = load_model('model.h5')
+
+# # Evaluate the model
+# # Replace 'test_data' and 'test_labels' with your test dataset and labels
+# loss, metrics = model.evaluate(test_data, test_labels)
+
+# print(f'Loss: {loss}')
+# print(f'Metrics: {metrics}')
