@@ -11,7 +11,7 @@ plt.figure()
 for n_neurons in neurons_list:
     for n_img in img_list:
         # Load the validation loss array
-        val_loss = np.load(f'ANNpictures/validation_loss_{n_neurons}n_{n_img}img.npy')
+        val_loss = np.load(f'ANNpictures/MLP_validation_loss_{n_neurons}n_{n_img}img.npy')
         
         # Plot the validation loss
         plt.plot(val_loss, label=f'{n_neurons} neurons, {n_img} images')
@@ -22,9 +22,9 @@ plt.legend()
 # Add labels and a title
 plt.xlabel('Epoch')
 plt.ylabel('Validation Loss')
-plt.title('Validation Loss vs Epoch for Different Numbers of Neurons and Training Examples')
+plt.title('MLP-Validation Loss vs Epoch for Different Numbers of Neurons and Training Examples')
 #savefig
-plt.savefig(f'ANNpictures/validation_loss_n_img.png')
+plt.savefig(f'ANNpictures/MLP_validation_loss_n_img.png',bbox_inches='tight')
 
 # Show the plot
 plt.show()
@@ -36,7 +36,7 @@ plt.figure()
 for n_neurons in neurons_list:
     for n_img in img_list:
         # Load the training loss array
-        train_loss = np.load(f'ANNpictures/training_loss_{n_neurons}n_{n_img}img.npy')
+        train_loss = np.load(f'ANNpictures/MLP_training_loss_{n_neurons}n_{n_img}img.npy')
         
         # Plot the training loss
         plt.plot(train_loss, label=f'{n_neurons} neurons, {n_img} images')
@@ -47,9 +47,9 @@ plt.legend()
 # Add labels and a title
 plt.xlabel('Epoch')
 plt.ylabel('Training Loss')
-plt.title('Training Loss vs Epoch for Different Numbers of Neurons and Training Examples')
+plt.title('MLP-Training Loss vs Epoch for Different Numbers of Neurons and Training Examples')
 #savefig
-plt.savefig(f'ANNpictures/training_loss_n_img.png')
+plt.savefig(f'ANNpictures/MLP_training_loss_n_img.png',bbox_inches='tight')
 # Show the plot
 plt.show()
 
@@ -102,7 +102,7 @@ axs[1].set_title('MLP-Mean Validation Loss for # (Neurons, Training Examples)')
 plt.tight_layout
 
 # Save the figure
-plt.savefig(f'ANNpictures/MLP_mean_loss.png')
+plt.savefig(f'ANNpictures/MLP_mean_loss.png',bbox_inches='tight')
 
 # Show the plot
 plt.show()

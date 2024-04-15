@@ -41,3 +41,10 @@ autoencoder_model = build_attention_autoencoder()
 
 # Model summary
 autoencoder_model.summary()
+
+# # Assuming x_train, y_train, x_test, y_test are already defined and preprocessed
+#     autoencoder_model = build_attention_autoencoder(input_shape=(32, 32, 1))
+#     autoencoder_model.summary()  # Optional: to view the model summary
+
+#     # Train the model
+#     history = autoencoder_model.fit(x_train, y_train, epochs=20, validation_data=(x_test, y_test))

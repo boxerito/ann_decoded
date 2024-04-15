@@ -23,7 +23,7 @@ def load_data(fname, image_dim=32):
     x = data[:, :image_dim*image_dim].reshape(-1, image_dim, image_dim, 1)  # Reshape for CNN
     y = x  # Assuming we want to reconstruct the same images
     return (x[bools], y[bools]), (x[np.logical_not(bools)], y[np.logical_not(bools)])
-
+maxval=[]
 for n_neurons in n_neu:
     for n_img in numbers_of_images:
         fname = f'neurons_to_cifar_{n_neurons}n_1rep{n_img}n_img'
@@ -51,15 +51,22 @@ for n_neurons in n_neu:
         history = model.fit(x_train, y_train, epochs=5, validation_data=(x_test, y_test))
 
         # Save the model
-        model.save(f'ANNpictures/model_{fname}.h5')
+        model.save(f'ANNpictures/Autoencoder_model_{fname}.h5')
 
         # Plotting the training and validation loss
         plt.plot(history.history['loss'])
         plt.plot(history.history['val_loss'])
+        ##Store the numpy of loss and val_loss
+        np.save(f'ANNpictures/Autoencoder_training_loss_{n_neurons}n_{n_img}img.npy',history.history['loss'])
+        np.save(f'ANNpictures/Autoencoder_validation_loss_{n_neurons}n_{n_img}img.npy',history.history['val_loss'])
+        maxval.append(max([max(history.history['val_loss']),max(history.history['loss'])]))
         plt.title('Model Loss for ' + fname)
         plt.ylabel('Loss')
         plt.xlabel('Epoch')
+        plt.ylim(0, 0.055)
         plt.legend(['Train', 'Test'], loc='upper right')
+        #save the figure
+        plt.savefig(f'ANNpictures/model_loss_Autoencoder_{fname}.png',bbox_inches='tight')
         plt.show()
 
         # Reconstruct images using the trained model
@@ -77,7 +84,8 @@ for n_neurons in n_neu:
             axs[1, i].imshow(reconstructed[i].reshape(32, 32), cmap='gray')
             axs[1, i].set_title("Reconstructed")
             axs[1, i].axis('off')
-
+        #save the figure
+        plt.savefig(f'ANNpictures/reconstruction_Autoencoder_{fname}.png',bbox_inches='tight')
         plt.show()
         # Find the first convolutional layer in the model
         for layer in model.layers:
@@ -101,5 +109,8 @@ for n_neurons in n_neu:
             axs[i].imshow(f, cmap='gray')
             axs[i].set_title(f'Filter {i+1}')
             axs[i].axis('off')
-
+        #save the figure
+        plt.savefig(f'ANNpictures/First_Conv_Layer_Filters_Autoencoder_{fname}.png',bbox_inches='tight')
         plt.show()
+print(maxval)
+print(max(maxval))
