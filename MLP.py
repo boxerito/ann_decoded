@@ -70,7 +70,8 @@ for n_neurons in n_neu:
         decoder.compile(optimizer='adam', loss=tf.keras.losses.MeanSquaredError())
         #SUGGEST ALTERNATIVE FOR LOSS FUNCTION
         # decoder.compile(optimizer='adam',loss=tf.keras.losses.MeanAbsoluteError())
-        history = decoder.fit(x_train, y_train, epochs=20, shuffle=True, validation_data=(x_test, y_test))
+        numberepochs=20
+        history = decoder.fit(x_train, y_train, epochs=numberepochs, shuffle=True, validation_data=(x_test, y_test))
 
         # Save and plot training history, reconstructed images, etc.
         decoder.save(f'ANNpictures/decoderMLP_{fname}.h5')

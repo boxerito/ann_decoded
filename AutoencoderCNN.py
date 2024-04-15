@@ -12,6 +12,8 @@ numbers_of_images = [1000, 3000, 10000, 30000]
 
 if not os.path.exists('ANNpictures'):
     os.makedirs('ANNpictures')
+# di si quieres normalizar con respecto a valores de 0 a 1
+norm_scale=True
 
 def load_data(fname, image_dim=32):
     data = np.genfromtxt(os.path.join(path, fname + '.csv'), delimiter=',')
@@ -47,28 +49,96 @@ for n_neurons in n_neu:
 
         model.compile(optimizer='adam', loss='mean_squared_error')
         model.summary()
+        # Calcular la pérdida inicial en el conjunto de entrenamiento
+        initial_loss_train = model.evaluate(x_train, y_train, verbose=0)
+        print(f"Pérdida inicial en el conjunto de entrenamiento: {initial_loss_train}")
+        # Calcular la pérdida inicial en el conjunto de validación
+        initial_loss_val = model.evaluate(x_test, y_test, verbose=0)
+        print(f"Pérdida inicial en el conjunto de validación: {initial_loss_val}")
+
 
         history = model.fit(x_train, y_train, epochs=5, validation_data=(x_test, y_test))
+
+        # Calcular y mostrar la pérdida después del entrenamiento, si es necesario
+        final_loss_train = model.evaluate(x_train, y_train, verbose=0)
+        final_loss_val = model.evaluate(x_test, y_test, verbose=0)
+        print(f'Pérdida final en el conjunto de entrenamiento: {final_loss_train}')
+        print(f'Pérdida final en el conjunto de validación: {final_loss_val}')
 
         # Save the model
         model.save(f'ANNpictures/Autoencoder_model_{fname}.h5')
 
-        # Plotting the training and validation loss
-        plt.plot(history.history['loss'])
-        plt.plot(history.history['val_loss'])
-        ##Store the numpy of loss and val_loss
-        np.save(f'ANNpictures/Autoencoder_training_loss_{n_neurons}n_{n_img}img.npy',history.history['loss'])
-        np.save(f'ANNpictures/Autoencoder_validation_loss_{n_neurons}n_{n_img}img.npy',history.history['val_loss'])
-        maxval.append(max([max(history.history['val_loss']),max(history.history['loss'])]))
-        plt.title('Model Loss for ' + fname)
-        plt.ylabel('Loss')
-        plt.xlabel('Epoch')
-        plt.ylim(0, 0.055)
-        plt.legend(['Train', 'Test'], loc='upper right')
-        #save the figure
-        plt.savefig(f'ANNpictures/model_loss_Autoencoder_{fname}.png',bbox_inches='tight')
-        plt.show()
+        combined_loss_train = []
+        combined_loss_val = []
 
+        # Añadir la pérdida inicial al comienzo de la lista
+        combined_loss_train.append(initial_loss_train)
+        combined_loss_val.append(initial_loss_val)
+
+        # Extender la lista con las pérdidas de entrenamiento y validación registradas durante el entrenamiento
+        combined_loss_train.extend(history.history['loss'])
+        combined_loss_val.extend(history.history['val_loss'])
+
+        # Añadir la pérdida final al final de la lista
+        combined_loss_train.append(final_loss_train)
+        combined_loss_val.append(final_loss_val)
+
+        # Ahora, combined_loss_train y combined_loss_val contienen la pérdida inicial, las pérdidas de cada época y la pérdida final
+        maxval.append(max([max(combined_loss_val),max(combined_loss_train)]))
+
+        # Plotting the training and validation loss
+        # Número de épocas de entrenamiento
+        epochs = range(1, len(history.history['loss']) + 1)
+        if norm_scale==False:
+            # Pérdida de entrenamiento y validación
+            plt.plot(epochs, history.history['loss'], label='Training Loss', color='red')
+            plt.plot(epochs, history.history['val_loss'], label='Validation Loss', color='blue')
+            # Añadir la pérdida inicial como puntos en el gráfico
+            # Usamos '0' para indicar el estado antes de la primera época
+            plt.scatter(0, initial_loss_train, c='red', label='Initial Training Loss')
+            plt.scatter(0, initial_loss_val, c='blue', label='Initial Validation Loss')
+
+            # Añadir la pérdida final como puntos en el gráfico
+            # Usamos 'len(epochs) + 1' para colocar estos puntos después de la última época
+            plt.scatter(len(epochs)+1, final_loss_train, c='darkred', label='Final Training Loss')
+            plt.scatter(len(epochs)+1, final_loss_val, c='darkblue', label='Final Validation Loss')
+            plt.title('Model Loss for ' + fname)
+            plt.ylabel('Loss')
+            plt.xlabel('Epoch')
+            plt.ylim(0, 0.065)
+            # plt.legend(['Train', 'Test'], loc='upper right')
+            plt.legend(loc='upper right')
+            #save the figure
+            plt.savefig(f'ANNpictures/model_loss_Autoencoder_{fname}.png',bbox_inches='tight')
+            plt.show()
+            ##Store the numpy of loss and val_loss
+            np.save(f'ANNpictures/Autoencoder_training_loss_{n_neurons}n_{n_img}img.npy',history.history['loss'])
+            np.save(f'ANNpictures/Autoencoder_validation_loss_{n_neurons}n_{n_img}img.npy',history.history['val_loss'])
+        elif norm_scale==True:
+            factornorm = max([combined_loss_train[0],combined_loss_val[0]])
+            combined_loss_train_norm = np.array(combined_loss_train)/factornorm
+            combined_loss_val_norm = np.array(combined_loss_val)/factornorm
+            # Plot the combined loss
+            plt.plot(range(len(combined_loss_train)), combined_loss_train_norm, label='Training Loss (Normalized)', color='red')
+            plt.plot(range(len(combined_loss_val)), combined_loss_val_norm, label='Validation Loss (Normalized)', color='blue')
+            # Marcar el 50% del valor máximo (initial loss)
+            plt.axhline(y=0.5, color='r', linestyle='--', label='50% of Initial Loss')
+
+            plt.title('Training and Validation Loss (Normalized)')
+            plt.xlabel('Epoch')
+            plt.ylabel('Loss (Normalized by Initial Loss)')
+            plt.ylim(0, 1)
+            plt.xlim(0, len(combined_loss_train) - 1)
+            plt.legend()
+            #save the figure
+            plt.savefig(f'ANNpictures/model_loss_Autoencoder_{fname}_normscale.png',bbox_inches='tight')
+            plt.show()
+            #store the numpy of loss and val_loss
+            np.save(f'ANNpictures/Autoencoder_training_loss_{n_neurons}n_{n_img}img_norm.npy',combined_loss_train_norm)
+            np.save(f'ANNpictures/Autoencoder_validation_loss_{n_neurons}n_{n_img}img_norm.npy',combined_loss_val_norm)
+        else:
+            print('Please set norm_scale to True or False')
+            break #break the loop
         # Reconstruct images using the trained model
         reconstructed = model.predict(x_test)
 
