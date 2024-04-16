@@ -11,7 +11,7 @@ plt.figure()
 for n_neurons in neurons_list:
     for n_img in img_list:
         # Load the validation loss array
-        val_loss = np.load(f'ANNpictures/Autoencoder_validation_loss_{n_neurons}n_{n_img}img.npy')
+        val_loss = np.load(f'ANNpictures/Autoencoder_validation_loss_{n_neurons}n_{n_img}img_norm.npy')
         
         # Plot the validation loss
         plt.plot(val_loss, label=f'{n_neurons} neurons, {n_img} images')
@@ -24,7 +24,7 @@ plt.xlabel('Epoch')
 plt.ylabel('Validation Loss')
 plt.title('Autoencoder-Validation Loss vs Epoch for Different Numbers of Neurons and Training Examples')
 #savefig
-plt.savefig(f'ANNpictures/Autoencoder_validation_loss_n_img.png',bbox_inches='tight')
+plt.savefig(f'ANNpictures/Autoencoder_validation_loss_n_img_norm.png',bbox_inches='tight')
 
 # Show the plot
 plt.show()
@@ -36,7 +36,7 @@ plt.figure()
 for n_neurons in neurons_list:
     for n_img in img_list:
         # Load the training loss array
-        train_loss = np.load(f'ANNpictures/Autoencoder_training_loss_{n_neurons}n_{n_img}img.npy')
+        train_loss = np.load(f'ANNpictures/Autoencoder_training_loss_{n_neurons}n_{n_img}img_norm.npy')
         
         # Plot the training loss
         plt.plot(train_loss, label=f'{n_neurons} neurons, {n_img} images')
@@ -49,7 +49,7 @@ plt.xlabel('Epoch')
 plt.ylabel('Training Loss')
 plt.title('Autoencoder-Training Loss vs Epoch for Different Numbers of Neurons and Training Examples')
 #savefig
-plt.savefig(f'ANNpictures/Autoencoder_training_loss_n_img.png',bbox_inches='tight')
+plt.savefig(f'ANNpictures/Autoencoder_training_loss_n_img_norm.png',bbox_inches='tight')
 # Show the plot
 plt.show()
 
@@ -62,8 +62,8 @@ loss_values_val = np.zeros((len(neurons_list), len(img_list)))
 for i, n_neurons in enumerate(neurons_list):
     for j, n_img in enumerate(img_list):
         # Load the training loss array
-        train_loss = np.load(f'ANNpictures/Autoencoder_training_loss_{n_neurons}n_{n_img}img.npy')
-        val_loss = np.load(f'ANNpictures/Autoencoder_validation_loss_{n_neurons}n_{n_img}img.npy')
+        train_loss = np.load(f'ANNpictures/Autoencoder_training_loss_{n_neurons}n_{n_img}img_norm.npy')
+        val_loss = np.load(f'ANNpictures/Autoencoder_validation_loss_{n_neurons}n_{n_img}img_norm.npy')
         
         # Store the mean loss value in the 2D array
         loss_values_train[i, j] = np.mean(train_loss)
@@ -78,7 +78,8 @@ max_val = max(np.max(loss_values_train), np.max(loss_values_val))
 # Create a 2D color plot of the training loss values
 im1 = axs[0].imshow(loss_values_train, cmap='hot', interpolation='nearest')
 # fig.colorbar(im1, ax=axs[0], label='Mean Training Loss', location='bottom')
-im1.set_clim(0, max_val)
+# im1.set_clim(0, max_val)
+im1.set_clim(0, 1)
 axs[0].set_xticks(np.arange(len(img_list)))
 axs[0].set_yticks(np.arange(len(neurons_list)))
 axs[0].set_xticklabels(img_list)
@@ -91,7 +92,8 @@ axs[0].set_title('Autoencoder-Mean Training Loss for # (Neurons, Training Exampl
 im2 = axs[1].imshow(loss_values_val, cmap='hot', interpolation='nearest')
 # Create a colorbar for both plots
 fig.colorbar(im2, ax=axs, label='Mean Validation Loss', location='bottom')
-im2.set_clim(0, max_val)
+# im2.set_clim(0, max_val)
+im2.set_clim(0, 1)
 axs[1].set_xticks(np.arange(len(img_list)))
 axs[1].set_yticks(np.arange(len(neurons_list)))
 axs[1].set_xticklabels(img_list)
@@ -102,7 +104,7 @@ axs[1].set_title('Autoencoder-Mean Validation Loss for # (Neurons, Training Exam
 plt.tight_layout
 
 # Save the figure
-plt.savefig(f'ANNpictures/Autoencoder_mean_loss.png',bbox_inches='tight')
+plt.savefig(f'ANNpictures/Autoencoder_mean_loss_norm.png',bbox_inches='tight')
 
 # Show the plot
 plt.show()
