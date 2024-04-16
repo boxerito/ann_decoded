@@ -2,7 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
 import os
-
 # load the data and make training and testing/validation datasets
 path = '~/data/Response_Simulation/A/'
 path = os.path.expanduser(path)
@@ -130,6 +129,24 @@ for n_neurons in n_neu:
             plt.ylim(0, 1)
             plt.xlim(0, len(combined_loss_train) - 1)
             plt.legend()
+            #para hacer el ajuste exponencial
+            from scipy.optimize import curve_fit
+            def exp_decay(epoch, L0, alpha, Lmin):
+                return L0 * np.exp(-alpha * epoch) + Lmin
+            # Ajuste de la curva
+            params, _ = curve_fit(exp_decay, range(len(combined_loss_train)), combined_loss_train_norm)
+            L0, alpha, Lmin = params
+            print(f'L0: {L0}, alpha: {alpha}, Lmin: {Lmin}')
+            # Plot the exponential decay curve
+            x_points=np.linspace(0,len(combined_loss_train)-1)
+            plt.plot(x_points, exp_decay(x_points, L0, alpha, Lmin), 'k--', label='Exponential Decay Fit')
+            # Add a legend
+            # Add a legend
+            plt.legend()
+            # Include the equation of the exponential fitting inside the plot
+            # plt.text(0.01, 0.95, f'L0: {L0:.3f}, alpha: {alpha:.3f}, Lmin: {Lmin:.3f}', transform=plt.gca().transAxes)
+            plt.text(0.01, 0.95, f'$L(t) = {L0:.3f} \cdot e^{{-{alpha:.3f} \cdot epoch}} + {Lmin:.3f}$', transform=plt.gca().transAxes)
+
             #save the figure
             plt.savefig(f'ANNpictures/model_loss_Autoencoder_{fname}_normscale.png',bbox_inches='tight')
             plt.show()

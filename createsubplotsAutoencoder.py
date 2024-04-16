@@ -3,6 +3,7 @@ import matplotlib.image as mpimg
 
 # List of combinations of n and i
 name_list=['reconstruction','model_loss','First_Conv_Layer_Filters']
+norm_scale=True
 for name in name_list:
     for n in [250,500,1000,2000]:
         # Initialize the figure and subplots
@@ -11,7 +12,10 @@ for name in name_list:
         for i, ax in zip([1000, 3000, 10000, 30000], axs.flatten()):
             # Generate the image file name based on n and i
             fname = f'neurons_to_cifar_{n}n_1rep{i}n_img'
-            img_file = f'ANNpictures/{name}_Autoencoder_{fname}.png'
+            if norm_scale==True and name=='model_loss':
+                img_file = f'ANNpictures/{name}_Autoencoder_{fname}_normscale.png'
+            else:
+                img_file = f'ANNpictures/{name}_Autoencoder_{fname}.png'
             # Load and display the image
             img = mpimg.imread(img_file)
             ax.imshow(img)
@@ -30,6 +34,8 @@ for name in name_list:
         
 
         plt.tight_layout()
-
-        plt.savefig(f'ANNpictures/{name}for{n}neurons_Autoencoder.png', dpi=500)
+        if norm_scale==True and name=='model_loss':
+            plt.savefig(f'ANNpictures/{name}for{n}neurons_Autoencoder_normscale.png', dpi=500)
+        else:
+            plt.savefig(f'ANNpictures/{name}for{n}neurons_Autoencoder.png', dpi=500)
         plt.show()
