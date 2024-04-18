@@ -162,3 +162,4 @@ for adaptive_noise_factor in [0.2, 0.4, 0.6, 0.8, 1.0, 1.2]:
 
 			#This contains the properties of the neurons
 			np.savetxt(fname + '_neuron_prop.csv', neuron_prop, delimiter=',')
+			
