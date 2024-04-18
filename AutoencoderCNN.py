@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
 import os
+import combineloss
+import SSIM
 # load the data and make training and testing/validation datasets
 path = '~/data/Response_Simulation/A/'
 path = os.path.expanduser(path)
@@ -46,6 +48,9 @@ for n_neurons in n_neu:
             tf.keras.layers.Conv2D(1, kernel_size=(3, 3), activation='sigmoid', padding='same')
         ])
 
+        # Compile the model with SSIM loss
+        # model.compile(optimizer='adam', loss=SSIM.calculate_ssim)
+
         model.compile(optimizer='adam', loss='mean_squared_error')
         model.summary()
         # Calcular la pérdida inicial en el conjunto de entrenamiento
@@ -54,10 +59,15 @@ for n_neurons in n_neu:
         # Calcular la pérdida inicial en el conjunto de validación
         initial_loss_val = model.evaluate(x_test, y_test, verbose=0)
         print(f"Pérdida inicial en el conjunto de validación: {initial_loss_val}")
-
+        #use combineloss function to extract the loss
+        combineloss_pre = combineloss.extract_and_combine_losses(model, x_train, y_train, x_test, y_test,"pre")
 
         history = model.fit(x_train, y_train, epochs=5, validation_data=(x_test, y_test))
+        #combining the losses to extract the loss
+        combineloss_post = combineloss.extract_and_combine_losses(model, x_train, y_train, x_test, y_test,"post",history)
 
+        _,_,fig = combineloss.combine_pretraining_and_training_losses(combineloss_pre,combineloss_post)
+        fig.savefig(f'ANNpictures/model_loss_norm_Autoencoder_{fname}.png',bbox_inches='tight')
         # Calcular y mostrar la pérdida después del entrenamiento, si es necesario
         final_loss_train = model.evaluate(x_train, y_train, verbose=0)
         final_loss_val = model.evaluate(x_test, y_test, verbose=0)

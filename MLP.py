@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from skimage.filters import gabor_kernel
 import os
 import tensorflow as tf
+import combineloss
 
 # Set the seed for TensorFlow's random module. To guarantee consistent results, you can set the seed to a fixed value.
 # tf.random.set_seed(0)  # Replace 0 with your desired seed
@@ -12,7 +13,7 @@ import tensorflow as tf
 # load the data and make training and testing/validation datasets
 path = '~/data/Response_Simulation/A/'
 path = os.path.expanduser(path)
-
+numberepochs=5
 n_neu = [250, 500, 1000, 2000]
 numbers_of_images = [1000, 3000, 10000, 30000]
 
@@ -68,11 +69,15 @@ for n_neurons in n_neu:
 
         # Compile and train the model
         decoder.compile(optimizer='adam', loss=tf.keras.losses.MeanSquaredError())
+        combinelosses_pre = combineloss.extract_and_combine_losses(decoder, x_train, y_train, x_test, y_test,"pre")
         #SUGGEST ALTERNATIVE FOR LOSS FUNCTION
         # decoder.compile(optimizer='adam',loss=tf.keras.losses.MeanAbsoluteError())
-        numberepochs=20
+        
         history = decoder.fit(x_train, y_train, epochs=numberepochs, shuffle=True, validation_data=(x_test, y_test))
-
+        combineloss_post=combineloss.extract_and_combine_losses(decoder, x_train, y_train, x_test, y_test,"post",history)
+        _,_,fig = combineloss.combine_pretraining_and_training_losses(combinelosses_pre,combineloss_post)
+        # fig.suptitle(f'Losses for {n_neurons} neurons and {n_img} images (MLP)', y=1.05) #to edit the title
+        fig.savefig(f'ANNpictures/model_loss_norm_MLP_{fname}.png',bbox_inches='tight')
         # Save and plot training history, reconstructed images, etc.
         decoder.save(f'ANNpictures/decoderMLP_{fname}.h5')
         plt.plot(history.history['loss'])
@@ -84,7 +89,7 @@ for n_neurons in n_neu:
         plt.ylim(0, 0.07)
         plt.legend(['train', 'test'], loc='upper right')
         #savefig
-        plt.savefig(f'ANNpictures/MLP_model_loss_{fname}.png')
+        plt.savefig(f'ANNpictures/model_loss_MLP_{fname}.png',bbox_inches='tight')
         #Store the numpy of loss and val_loss
         np.save(f'ANNpictures/MLP_training_loss_{n_neurons}n_{n_img}img.npy', history.history['loss'])
         np.save(f'ANNpictures/MLP_validation_loss_{n_neurons}n_{n_img}img.npy', history.history['val_loss'])

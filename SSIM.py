@@ -8,15 +8,15 @@ def calculate_ssim(y_true, y_pred):
     # y ambos tienen la misma forma
     
     # Primero, determina el rango de tus datos
-    min_val = np.min(y_true)
-    max_val = np.max(y_true)
+    # min_val = np.min(y_true)
+    # max_val = np.max(y_true)
     
-    # Prepara las imágenes para el cálculo del SSIM según su rango
-    if min_val >= 0 and max_val > 1:
-        # Si el rango es [0, 255], convertir a float y normalizar a [0, 1]
-        y_true = y_true.astype(np.float32) / 255.0
-        y_pred = y_pred.astype(np.float32) / 255.0
-    # Nota: Si el rango ya es [0, 1], no se necesita ajuste adicional
+    # # Prepara las imágenes para el cálculo del SSIM según su rango
+    # if min_val >= 0 and max_val > 1:
+    #     # Si el rango es [0, 255], convertir a float y normalizar a [0, 1]
+    #     y_true = y_true.astype(np.float32) / 255.0
+    #     y_pred = y_pred.astype(np.float32) / 255.0
+    # # Nota: Si el rango ya es [0, 1], no se necesita ajuste adicional
     
     # Calcula el SSIM
     return 1 - tf.reduce_mean(tf.image.ssim(y_true, y_pred, max_val=1))

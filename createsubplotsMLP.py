@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
 # List of combinations of n and i
-name_list=['reconstruction','model_loss']
+name_list=['reconstruction','model_loss','model_loss_norm']
 for name in name_list:
     for n in [250,500,1000,2000]:
         # Initialize the figure and subplots
@@ -17,13 +17,16 @@ for name in name_list:
             img = mpimg.imread(img_file)
             ax.imshow(img)
             ax.axis('off')
-            fontsize=8
+            fontsize=9
             # Set the title based on the name
             if name == 'reconstruction':
                 ax.set_title(f'Orig. vs recons. ({n} neurons, {i} images)', fontsize=fontsize)
                 plt.subplots_adjust(wspace=0, hspace=-0.8)
             elif name == 'model_loss':
                 ax.set_title(f'Cost vs Epoch ({n} neurons, {i} images)', fontsize=fontsize)
+                plt.subplots_adjust(wspace=0, hspace=0)
+            elif name == 'model_loss_norm':
+                ax.set_title(f'Cost vs Epoch (normalized) ({n} neurons, {i} images)', fontsize=fontsize)
                 plt.subplots_adjust(wspace=0, hspace=0)
         
 
